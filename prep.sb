@@ -1,0 +1,23 @@
+#!/bin/bash --login
+#SBATCH --job-name=lgn_prep
+#SBATCH --time=03:59:00
+#SBATCH --mem=32G
+#SBATCH --gpus=v100:1
+#SBATCH --cpus-per-task=2
+#SBATCH --output=/mnt/scratch/jeaves/LGN/logs/%x_%A_%a.out
+#SBATCH --error=/mnt/scratch/jeaves/LGN/logs/%x_%A_%a.err
+
+#set -euo pipefail
+
+module purge
+module load Miniforge3
+conda activate lgn
+
+DATA_DIR="/mnt/scratch/jeaves/v2016/"
+OUT_DIR="/mnt/scratch/jeaves/LGN/dataset"
+INDEX_FILE="${DATA_DIR}/INDEX_general_PL_data.2016"
+
+OUT_PKL="${OUT_DIR}/general_core.pkl"
+OUT_CSV="${OUT_DIR}/prep_times.csv"
+
+python3 preprocess.py -data_dir "$DATA_DIR" -data_index "$INDEX_FILE" -data_val_dir "${OUT_DIR}/coreset/" -data_val_index "${OUT_DIR}/CoreSet.dat" -ouput "$OUT_PKL" -out_csv "$OUT_CSV"
